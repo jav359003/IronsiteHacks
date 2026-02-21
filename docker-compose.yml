@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+
+  cosmos-reason2:
+    image: nvcr.io/nim/nvidia/cosmos-reason2-2b:1.6.0
+    environment:
+      - NGC_API_KEY=${NGC_API_KEY}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nim_cache:/opt/nim/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  cosmos-embed1:
+    image: nvcr.io/nim/nvidia/cosmos-embed1:1.0.0
+    environment:
+      - NGC_API_KEY=${NGC_API_KEY}
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./nim_cache:/opt/nim/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
